@@ -3,8 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 
 import psycopg2
-
-
+import dotenv
 
 
 
@@ -16,8 +15,17 @@ def index():
 
 @app.route('/v1/health', methods=['GET'])
 def do_stuff():
-   print('Request for index page received')
-   return "fuck this shit"
+    print('Request for index page received')
+    var = dotenv_load("/home/en_var.env")
+
+    conn = psycopg2.connect(
+       host="147.175.150.216",
+       database="dota2",
+       user=var['DBUSER'],
+       password=var['DBPASS'])
+
+
+    return var
 
 
 
