@@ -9,6 +9,13 @@ def index():
    return render_template('index.html')
 
 
+@app.route('/v1/health', methods=['GET'])
+def do_stuff():
+   print('Request for index page received')
+   return "fuck this shit"
+
+
+
 @app.route('/hello', methods=['POST'])
 def hello():
    name = request.form.get('name')
