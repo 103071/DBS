@@ -24,8 +24,11 @@ def do_stuff():
        user=var['DBUSER'],
        password=var['DBPASS'])
 
+    cur = conn.cursor()
+    cur.execute("SELECT VERSION()")
+    fetched = cur.fetchone()
 
-    return var
+    return fetched
 
 
 
