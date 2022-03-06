@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 
 import psycopg2
-import dotenv
+from dotenv import dotenv_values
 
 
 
@@ -16,7 +16,7 @@ def index():
 @app.route('/v1/health', methods=['GET'])
 def do_stuff():
     print('Request for index page received')
-    var = dotenv_load("/home/en_var.env")
+    var = dotenv_values("/home/en_var.env")
 
     conn = psycopg2.connect(
        host="147.175.150.216",
