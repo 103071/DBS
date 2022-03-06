@@ -2,6 +2,11 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 
+import psycopg2
+
+
+
+
 
 @app.route('/')
 def index():
