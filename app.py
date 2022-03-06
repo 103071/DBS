@@ -16,9 +16,19 @@ def index():
 @app.route('/v1/health', methods=['GET'])
 def do_stuff():
     print('Request for index page received')
+    var = dotenv_values("/home/en_var.env")
 
+    conn = psy.connect(
+       host="147.175.150.216",
+       database="dota2",
+       user=var['DBUSER'],
+       password=var['DBPASS'])
 
-    return "lol"
+    cur = conn.cursor()
+    cur.execute("SELECT VERSION()")
+    fetched = cur.fetchone()
+
+    return fetched[0]
 
 
 
