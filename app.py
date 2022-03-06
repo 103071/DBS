@@ -33,12 +33,21 @@ def do_stuff():
     fetched_size = cur.fetchone()
 
     data = {
-        'pgsql':  {
+        'pgsql': [ {
             'dota2_db_size': fetched_size[0]
-            'version': fetched_version[0]
-        }
+
+            },
+            {
+                'version': fetched_version[0]
+            }
+        ]
     }
-    json_string = json.dumps(data)
+
+    dic = {}
+    dic["dota2_db_size"] = fetched_size[0]
+    dic['version'] = fetched_version[0]
+
+    json_string = json.dumps(dic)
 
     return json_string
 
