@@ -32,22 +32,15 @@ def do_stuff():
     cur.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size")
     fetched_size = cur.fetchone()
 
-    data = {
-        'pgsql': [ {
-            'dota2_db_size': fetched_size[0]
 
-            },
-            {
-                'version': fetched_version[0]
-            }
-        ]
-    }
 
     dic = {}
+    dic2 = {}
+    dic2['pgsql'] = dic
     dic["dota2_db_size"] = fetched_size[0]
     dic['version'] = fetched_version[0]
 
-    json_string = json.dumps(dic)
+    json_string = json.dumps(dic2)
 
     return json_string
 
