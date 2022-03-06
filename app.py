@@ -4,6 +4,7 @@ app = Flask(__name__)
 
 import psycopg2 as psy
 from dotenv import dotenv_values
+import json
 
 
 
@@ -26,9 +27,24 @@ def do_stuff():
 
     cur = conn.cursor()
     cur.execute("SELECT VERSION()")
-    fetched = cur.fetchone()
+    fetched_version = cur.fetchone()
 
-    return fetched[0]
+    cur.execute("SELECT pg_database_size('dota2')/1024/1024 as dota2_db_size")
+    fetched_size = cur.fetchone()
+
+    data = {
+        'pgsql': [ {
+            'version': fetched_version[0]
+            },
+            {
+                'dota2_db_size': fetched_size[0]
+            }
+
+        ]
+    }
+    json_string = json.dumps(data)
+
+    return json_string
 
 
 
