@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
 
-import psycopg2
+import psycopg2 as psy
 from dotenv import dotenv_values
 
 
@@ -18,7 +18,7 @@ def do_stuff():
     print('Request for index page received')
     var = dotenv_values("/home/en_var.env")
 
-    conn = psycopg2.connect(
+    conn = psy.connect(
        host="147.175.150.216",
        database="dota2",
        user=var['DBUSER'],
