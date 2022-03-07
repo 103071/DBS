@@ -5,7 +5,7 @@ app = Flask(__name__)
 import psycopg2 as psy
 from dotenv import dotenv_values
 import json
-from flsk import Response
+
 
 
 @app.route('/')
@@ -13,9 +13,10 @@ def index():
    print('Request for index page received')
    return render_template('index.html')
 
-# Zadanie 1
+
 @app.route('/v1/health', methods=['GET'])
 def do_stuff():
+    print('Request for index page received')
     var = dotenv_values("/home/en_var.env")
 
     conn = psy.connect(
@@ -35,7 +36,6 @@ def do_stuff():
 
     dic = {}
     dic2 = {}
-
     dic2['pgsql'] = dic
     dic["dota2_db_size"] = fetched_size[0]
     dic['version'] = fetched_version[0]
@@ -43,17 +43,6 @@ def do_stuff():
     json_string = json.dumps(dic2)
 
     return json_string
-
-# Zadanie 2
-@app.route('/v2/patches', methods=['GET'])
-def get_patches():
-
-    cur = conn.cursor()
-    #cur.execute("SELECT ")
-    fetched_version = cur.fetchone()
-
-    return Response("{'a':'b'}", status=200, mimetype='application/json')
-    #return "patches"
 
 
 
