@@ -168,7 +168,7 @@ def game_objectives(player_id):
 
     cur = conn.cursor()
     cur.execute("select pl.id, pl.nick as player_nick, mpd.match_id, heroes.localized_name, "
-                "coalesce(game_objectives.subtype, 'NO ACTION') "
+                "coalesce(game_objectives.subtype, 'NO_ACTION') "
                 "from players as pl "
                 "left join matches_players_details as mpd on mpd.player_id = pl.id "
                 "left join heroes on heroes.id = mpd.hero_id "
