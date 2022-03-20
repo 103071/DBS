@@ -47,18 +47,17 @@ def get_patches():
     conn = connect()
 
     cur = conn.cursor()
-    cur.execute("select vsetkypece.patch_version, vsetkypece.patch_start_date, vsetkypece.patch_end_date, matches.id as match_id, duration "
-                "from matches "
-                "left join ("
-                "select patches.name as patch_version, "
+    cur.execute("select vsetkymece.match_id, vsetkymece.duration, patches.name as patch_version, "
                 "extract(epoch from patches.release_date) as patch_start_date, "
                 "extract (epoch from next_patch.release_date) as patch_end_date "
                 "from patches "
-                "left join patches as next_patch "
-                "on patches.id = next_patch.id  - 1 "
+                "left join patches as next_patch on patches.id = next_patch.id  - 1 "
+                "left join ("
+                "select matches.id as match_id, duration, start_time "
+                "from matches "
+                ") as vsetkymece on (vsetkymece.start_time > extract(epoch from patches.release_date) "
+                "and vsetkymece.start_time < coalesce (extract (epoch from next_patch.release_date) , 9999999999))"
                 "order by patches.id"
-                ") as vsetkypece on (matches.start_time > vsetkypece.patch_start_date "
-                "and matches.start_time < coalesce (vsetkypece.patch_end_date, 9999999999))"
                 )
 
     dic = {}
@@ -70,32 +69,35 @@ def get_patches():
 
         for patch in dic['patches']:
             # column patch_version
-            if patch['patch_version'] == str(column[0]):
+            if patch['patch_version'] == str(column[2]):
                 current_patch = patch
                 break
 
         if current_patch is not None:
             match = {}
 
-            match['match_id'] = column[3]
-            match['duration'] = column[4]
+            match['match_id'] = column[0]
+            match['duration'] = column[1]
 
             current_patch['matches'].append(match)
 
 
         else:
             current_patch = {}
-            current_patch['patch_version'] = column[0]
-            current_patch['patch_start_date'] = column[1]
-            current_patch['patch_end_date'] = column[2]
+            current_patch['patch_version'] = column[2]
+            current_patch['patch_start_date'] = column[3]
+            current_patch['patch_end_date'] = column[4]
 
             current_patch['matches'] = []
-            match = {}
 
-            match['match_id'] = column[3]
-            match['duration'] = column[4]
+            if column[0] is not None:
+                match = {}
 
-            current_patch['matches'].append(match)
+                match['match_id'] = column[0]
+                match['duration'] = column[1]
+
+                current_patch['matches'].append(match)
+                
             dic['patches'].append(current_patch)
 
     json_string = json.dumps(dic)
