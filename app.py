@@ -174,22 +174,57 @@ def game_objectives(player_id):
                 "left join heroes on heroes.id = mpd.hero_id "
                 "left join game_objectives on game_objectives.match_player_detail_id_1 = mpd.id "
                 "where pl.id = " + player_id +
-                " order by mpd.match_id")
+                " order by mpd.match_id, subtype")
 
     dic = {}
-    dic['id'] = player_id
+    dic['id'] = int(player_id)
+
+
+
     matches = []
 
-    dic['matches'] = matches
-
     for column in cur:
-        if not dic.contains('player_nick'):
+        if not 'player_nick' in dic.keys():
             dic['player_nick'] = column[1]
 
         current_match = None
+
         for match in matches:
             if match['match_id'] == column[2]:
-                current_match = match['match_id']
+                current_match = match
+                break
+
+        if current_match is not None:
+            current = None
+
+            for action in current_match['actions']:
+                if action['hero_action'] == column[4]:
+                    current = action
+                    break
+
+            if current is not None:
+                current['count'] += 1
+
+            else:
+                current = {}
+                current['hero_action'] = column[4]
+                current['count'] = 1
+                current_match['actions'].append(current)
+
+
+        else:
+            current_match = {}
+            current_match['match_id'] = column[2]
+            current_match['hero_localized_name'] = column[3]
+            matches.append(current_match)
+
+            current_match['actions'] = []
+            action = {}
+            action['hero_action'] = column[4]
+            action['count'] = 1
+            current_match['actions'].append(action)
+
+    dic['matches'] = matches
 
     json_string = json.dumps(dic)
     cur.close()
