@@ -85,8 +85,8 @@ def get_patches():
         else:
             current_patch = {}
             current_patch['patch_version'] = column[2]
-            current_patch['patch_start_date'] = column[3]
-            current_patch['patch_end_date'] = column[4]
+            current_patch['patch_start_date'] = int(column[3])
+            current_patch['patch_end_date'] = int(column[4])
 
             current_patch['matches'] = []
 
@@ -97,7 +97,7 @@ def get_patches():
                 match['duration'] = column[1]
 
                 current_patch['matches'].append(match)
-                
+
             dic['patches'].append(current_patch)
 
     json_string = json.dumps(dic)
