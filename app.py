@@ -47,9 +47,9 @@ def get_patches():
     conn = connect()
 
     cur = conn.cursor()
-    cur.execute("select vsetkymece.match_id, vsetkymece.duration, patches.name as patch_version, "
-                "extract(epoch from patches.release_date) as patch_start_date, "
-                "extract (epoch from next_patch.release_date) as patch_end_date "
+    cur.execute("select vsetkymece.match_id, round (vsetkymece.duration/60.0, 2) as duration, patches.name as patch_version, "
+                "cast (extract(epoch from patches.release_date) as INT) as patch_start_date, "
+                "cast (extract (epoch from next_patch.release_date) as INT) as patch_end_date "
                 "from patches "
                 "left join patches as next_patch on patches.id = next_patch.id  - 1 "
                 "left join ("
@@ -77,7 +77,7 @@ def get_patches():
             match = {}
 
             match['match_id'] = column[0]
-            match['duration'] = column[1]
+            match['duration'] = float(column[1])
 
             current_patch['matches'].append(match)
 
@@ -85,8 +85,8 @@ def get_patches():
         else:
             current_patch = {}
             current_patch['patch_version'] = column[2]
-            current_patch['patch_start_date'] = int(column[3])
-            current_patch['patch_end_date'] = int(column[4])
+            current_patch['patch_start_date'] = column[3]
+            current_patch['patch_end_date'] = column[4]
 
             current_patch['matches'] = []
 
@@ -94,7 +94,7 @@ def get_patches():
                 match = {}
 
                 match['match_id'] = column[0]
-                match['duration'] = column[1]
+                match['duration'] = float(column[1])
 
                 current_patch['matches'].append(match)
 
