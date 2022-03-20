@@ -121,7 +121,7 @@ def get_game_exp(player_id):
     dic = {}
 
 
-    dic['id'] = player_id
+    dic['id'] = int(player_id)
     dic['player_nick'] = cur.fetchone()[0]
 
     cur.execute("select pl.id, coalesce (pl.nick,'unknown') as player_nick, match_id, "
