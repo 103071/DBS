@@ -37,6 +37,7 @@ def do_stuff():
     dic['version'] = fetched_version[0]
 
     json_string = json.dumps(dic2)
+    cur.close()
 
     return json_string
 
@@ -56,7 +57,7 @@ def get_patches():
                 "select matches.id as match_id, duration, start_time "
                 "from matches "
                 ") as vsetkymece on (vsetkymece.start_time > extract(epoch from patches.release_date) "
-                "and vsetkymece.start_time < coalesce (extract (epoch from next_patch.release_date) , 9999999999))"
+                "and vsetkymece.start_time < coalesce (extract (epoch from next_patch.release_date) , 9999999999)) "
                 "order by patches.id"
                 )
 
@@ -101,6 +102,7 @@ def get_patches():
             dic['patches'].append(current_patch)
 
     json_string = json.dumps(dic)
+    cur.close()
 
     return json_string
 
@@ -108,8 +110,91 @@ def get_patches():
 
 # 2
 @app.route('/v2/players/<string:player_id>/game_exp/', methods=['GET'])
-def get_game_exp():
-    pass
+def get_game_exp(player_id):
+    conn = connect()
+
+    cur = conn.cursor()
+    cur.execute("select coalesce (nick, 'nick') from players "
+                "where id = " + player_id)
+
+    matches = []
+    dic = {}
+
+
+    dic['id'] = player_id
+    dic['player_nick'] = cur.fetchone()[0]
+
+    cur.execute("select pl.id, coalesce (pl.nick,'unknown') as player_nick, match_id, "
+        "localized_name as hero_localized_name, "
+        "round (m.duration / 60.0, 2) as match_duration_minutes, "
+        "coalesce (xp_hero, 0) + coalesce(xp_creep,0) + coalesce(xp_other,0) + coalesce(xp_roshan,0) as experiences_gained, "
+        "greatest(level) as level_gained, "
+        "case when mpd.player_slot < 5 and m.radiant_win = true or mpd.player_slot > 127 and m.radiant_win = false "
+        "then true else false end as winner "
+        "from matches_players_details as mpd "
+        "join players as pl "
+        "on pl.id = mpd.player_id "
+        "join heroes as hero "
+        "on mpd.hero_id = hero.id "
+        "join matches as m "
+        "on mpd.match_id = m.id "
+        "where pl.id = " + player_id +
+        " order by m.id"
+    )
+
+
+    for column in cur:
+        match = {}
+        match['match_id'] = column[2]
+        match['hero_localized_name'] = column[3]
+        match['match_duration_minutes'] = float(column[4])
+        match['experiences_gained'] = column[5]
+        match['level_gained'] = column[6]
+        match['winner'] = column[7]
+
+        matches.append(match)
+
+    dic['matches'] = matches
+
+    json_string = json.dumps(dic)
+    cur.close()
+
+    return json_string
+
+# 3
+@app.route('/v2/players/<string:player_id>/game_objectives/', methods=['GET'])
+def game_objectives(player_id):
+    conn = connect()
+
+    cur = conn.cursor()
+    cur.execute("select pl.id, pl.nick as player_nick, mpd.match_id, heroes.localized_name, "
+                "coalesce(game_objectives.subtype, 'NO ACTION') "
+                "from players as pl "
+                "left join matches_players_details as mpd on mpd.player_id = pl.id "
+                "left join heroes on heroes.id = mpd.hero_id "
+                "left join game_objectives on game_objectives.match_player_detail_id_1 = mpd.id "
+                "where pl.id = " + player_id +
+                " order by mpd.match_id")
+
+    dic = {}
+    dic['id'] = player_id
+    matches = []
+
+    dic['matches'] = matches
+
+    for column in cur:
+        if not dic.contains('player_nick'):
+            dic['player_nick'] = column[1]
+
+        current_match = None
+        for match in matches:
+            if match['match_id'] == column[2]:
+                current_match = match['match_id']
+
+    json_string = json.dumps(dic)
+    cur.close()
+
+    return json_string
 
 
 
