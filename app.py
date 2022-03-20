@@ -177,11 +177,10 @@ def game_objectives(player_id):
                 " order by mpd.match_id, subtype")
 
     dic = {}
+    matches = []
+    
     dic['id'] = int(player_id)
 
-
-
-    matches = []
 
     for column in cur:
         if not 'player_nick' in dic.keys():
