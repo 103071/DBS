@@ -41,13 +41,8 @@ def do_stuff():
     return json_string
 
 # Zadanie 2
-# 2
-@app.route('/v2/players/<string:player_id>/game_exp/', methods=['GET'])
-def get_game_exp():
-    pass
-
 # 1
-@app.route('/v2/patches', methods=['GET'])
+@app.route('/v2/patches/', methods=['GET'])
 def get_patches():
     conn = connect()
 
@@ -106,6 +101,14 @@ def get_patches():
     json_string = json.dumps(dic)
 
     return json_string
+
+
+
+# 2
+@app.route('/v2/players/<string:player_id>/game_exp/', methods=['GET'])
+def get_game_exp():
+    pass
+
 
 
 
