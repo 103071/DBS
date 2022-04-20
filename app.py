@@ -237,32 +237,39 @@ def game_objectives(player_id):
 # 1
 @app.route('/v3/matches/<string:match_id>/top_purchases/', methods=['GET'])
 def top_purch(match_id):
-    #conn = connect()
+    conn = connect()
 
-    #cur = conn.cursor()
-    #cur.execute("")
-    #fetched_version = cur.fetchone()
+    cur = conn.cursor()
+    cur.execute(("WITH query_d as ( "
+                 "SELECT mt.id match_id, items.name, mt.radiant_win, mt_p_det.id mpd_id, "
+                 "heroes.localized_name, mt_p_det.player_id, mt_p_det.hero_id, "
+                 "mt_p_det.player_slot, p.item_id, "
+                 "COUNT (p.item_id) buy_count, "
+                 "ROW_NUMBER() OVER (PARTITION BY mt_p_det.id ORDER BY COUNT(p.item_id) DESC, items.name ASC) "
+                 "FROM matches mt "
+                 "JOIN matches_players_details mt_p_det ON mt_p_det.match_id = mt.id "
+                 "JOIN purchase_logs p ON mt_p_det.id = match_player_detail_id "
+                 "JOIN heroes ON mt_p_det.hero_id = heroes.id "
+                 "JOIN items ON p.item_id = items.id "
+                 "WHERE mt.id = {} AND CASE "
+                 "WHEN mt_p_det.player_slot >= 0 AND mt_p_det.player_slot <= 4 AND mt.radiant_win = true THEN true "
+                 "WHEN mt_p_det.player_slot >= 128 AND mt_p_det.player_slot <= 132 AND mt.radiant_win = false THEN true "
+                 "END "
+                 "GROUP BY(mt.id,heroes.localized_name, items.name, mpd_id, p.item_id) "
+                 "ORDER BY mt_p_det.hero_id ASC, buy_count DESC, items.name ASC) "
+                 "SELECT * FROM query_d "
+                 "WHERE ROW_NUMBER <= 5 ").format(match_id))
 
-    #cur.execute("")
-    #fetched_size = cur.fetchone()
+
+    dic = {}
+    dic['id'] = int(match_id)
+
+    
 
 
-    return "json_string"
 
-# 2
-@app.route('/v3/abilities/<string:ability_id>/usage/', methods=['GET'])
-def ab_usage(ability_id):
-    #conn = connect()
+    return "WORKS"
 
-    #cur = conn.cursor()
-    #cur.execute("")
-    #fetched_version = cur.fetchone()
-
-    #cur.execute("")
-    #fetched_size = cur.fetchone()
-
-
-    return "json_string"
 
 
 
