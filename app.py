@@ -15,7 +15,7 @@ def index():
    print('Request for index page received')
    return render_template('index.html')
 
-# Zadanie 1
+# Zadanie 2
 @app.route('/v1/health', methods=['GET'])
 def do_stuff():
     conn = connect()
@@ -41,7 +41,7 @@ def do_stuff():
 
     return json_string
 
-# Zadanie 2
+# Zadanie 3
 # 1
 @app.route('/v2/patches/', methods=['GET'])
 def get_patches():
@@ -178,7 +178,7 @@ def game_objectives(player_id):
 
     dic = {}
     matches = []
-    
+
     dic['id'] = int(player_id)
 
 
@@ -233,6 +233,42 @@ def game_objectives(player_id):
 
 
 
+# ZADANIE 5
+# 1
+@app.route('/v3/matches/<string:match_id>/top_purchases/', methods=['GET'])
+def top_purch(match_id):
+    #conn = connect()
+
+    #cur = conn.cursor()
+    #cur.execute("")
+    #fetched_version = cur.fetchone()
+
+    #cur.execute("")
+    #fetched_size = cur.fetchone()
+
+
+    return "json_string"
+
+# 2
+@app.route('/v3/abilities/<string:ability_id>/usage/', methods=['GET'])
+def ab_usage(ability_id):
+    #conn = connect()
+
+    #cur = conn.cursor()
+    #cur.execute("")
+    #fetched_version = cur.fetchone()
+
+    #cur.execute("")
+    #fetched_size = cur.fetchone()
+
+
+    return "json_string"
+
+
+
+
+
+
 def linux_version():
     var = dotenv_values("/home/en_var.env")
 
@@ -255,8 +291,6 @@ def connect():
         return linux_version()
     else:
         return win_version()
-
-
 
 
 @app.route('/hello', methods=['POST'])
