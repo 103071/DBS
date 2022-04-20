@@ -241,7 +241,7 @@ def top_purch(match_id):
 
     cur = conn.cursor()
     cur.execute(("WITH query_d as ( "
-                 "SELECT mt.id match_id, items.name, mt.radiant_win, mt_p_det.id mpd_id, "
+                 "SELECT items.name, mt.radiant_win, mt_p_det.id mpd_id, mt.id match_id, "
                  "heroes.localized_name, mt_p_det.player_id, mt_p_det.hero_id, "
                  "mt_p_det.player_slot, p.item_id, "
                  "COUNT (p.item_id) buy_count, "
@@ -263,12 +263,21 @@ def top_purch(match_id):
 
     dic = {}
     dic['id'] = int(match_id)
+    heroes = []
 
-    
+    for column in cur:
+        hero = {}
+        hero['hero_localized_name'] = column[3]
+
+        heroes.append(hero)
+
+    dic['heroes'] = heroes
+
+    json_string = json.dumps(dic)
+    cur.close()
 
 
-
-    return "WORKS"
+    return jason_string
 
 
 
