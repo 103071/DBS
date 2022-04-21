@@ -277,7 +277,7 @@ def top_purch(match_id):
     cur.close()
 
 
-    return jason_string
+    return "jason_string"
 
 
 
