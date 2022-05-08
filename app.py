@@ -496,19 +496,6 @@ def do_stuff():
 
 # ZADANIE 4
 
-@app.route('/v4/patches/', methods=['GET'])
-def orm_patches():
-    patches = Patch.query.join(Patch, Patch.id == Patch.label("next_patch").id - 1) \
-            .join(Match, Match.id.label("match_id"), Match.duration.label("duration"), Match.start_time.label("start_time")) \
-
-    # {"patches": [{"patch_version": "6.70", "patch_start_date": 1446595200, "patch_end_date": 1446681600, "matches": []}
-    dic = {}
-    dic['patches'] = []
-
-    return Response(json.dumps("fck"), status=200, mimetype="application/json")
-
-
-
 @app.route('/v4/players/<string:player_id>/game_exp/', methods=['GET'])
 def orm_game_exp(player_id):
     player = Player.query.join(MatchesPlayersDetail, MatchesPlayersDetail.player_id == Player.id)\
