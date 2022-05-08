@@ -836,10 +836,39 @@ def top_purch(match_id):
     heroes = []
 
     for column in cur:
-        hero = {}
-        hero['hero_localized_name'] = column[3]
+        act_hero = None
+        for hero in heroes:
+            if hero['id'] == column[6]:
+                act_hero = hero
+                break
 
-        heroes.append(hero)
+        if act_hero is None:
+
+            act_hero = {}
+            act_hero['id'] = column[6]
+            act_hero['name'] = column[4]
+
+            purchases = []
+
+            purchase = {}
+            purchase['id'] = column[8]
+            purchase['name'] = column[0]
+            purchase['count'] = column[9]
+            purchases.append(purchase)
+
+            act_hero['top_purchases'] = purchases
+
+            heroes.append(act_hero)
+
+        else:
+            purchases = act_hero['top_purchases']
+
+            purchase = {}
+            purchase['id'] = column[8]
+            purchase['name'] = column[0]
+            purchase['count'] = column[9]
+            purchases.append(purchase)
+
 
     dic['heroes'] = heroes
 
@@ -847,7 +876,7 @@ def top_purch(match_id):
     cur.close()
 
 
-    return "jason_string"
+    return json_string
 
 
 
