@@ -495,7 +495,6 @@ def do_stuff():
 
 
 # ZADANIE 4
-
 @app.route('/v4/players/<string:player_id>/game_exp/', methods=['GET'])
 def orm_game_exp(player_id):
     player = Player.query.join(MatchesPlayersDetail, MatchesPlayersDetail.player_id == Player.id)\
